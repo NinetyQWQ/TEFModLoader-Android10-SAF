@@ -339,7 +339,10 @@ actual object HomeScreen{
                             EFLog.v("设置外部模式配置为true")
 
                             EFLog.i("准备启动游戏: $packageName")
-                            Apk.launchAppByPackageName(packageName)
+                            Apk.launchAppByPackageName(
+                                packageName,
+                                configuration.getString(KEY_MOD_DIR_URI)
+                            )
                             EFLog.i("游戏启动成功，关闭当前Activity")
                             MainActivity.getContext().finishAffinity()
                         }

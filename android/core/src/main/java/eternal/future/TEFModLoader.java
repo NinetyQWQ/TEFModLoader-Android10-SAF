@@ -84,15 +84,34 @@ public class TEFModLoader extends Activity {
         }
     }
 
-    /** 外部模式：取 SAF 授权目录，若未授权则先弹目录选择器 */
+    /** 外部模式：优先取 composeApp 启动时经 Intent 传入的 SAF 目录，其次取持久化授权，最后弹目录选择器 */
     private void prepareExternal() {
-        Uri tree = getPersistedTreeUri();
+        Uri tree = getIntentTreeUri();
+        if (tree == null) {
+            tree = getPersistedTreeUri();
+        }
         if (tree == null) {
             requestSafTree();
         } else {
+            persistTreeUri(tree);
             applyExternal(tree);
             startGame();
         }
+    }
+
+    /** 读取 composeApp 启动本游戏 Activity 时经 Intent data 传入的 SAF tree URI */
+    private Uri getIntentTreeUri() {
+        try {
+            Intent i = getIntent();
+            if (i != null) {
+                Uri data = i.getData();
+                if (data != null && "content".equalsIgnoreCase(data.getScheme())) {
+                    return data;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
     /** 从 SAF 目录把 Modx/EFMod/Data 复制进游戏私有目录 */

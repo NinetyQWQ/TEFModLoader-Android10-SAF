@@ -1,5 +1,6 @@
 package eternal.future.tefmodloader.utility
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.net.toUri
 import eternal.future.tefmodloader.MainApplication
@@ -74,11 +75,19 @@ fun Apk.getPackageNamesWithMetadata(metadataKey: String): Map<String, Int> {
     }.toMap()
 }
 
-fun Apk.launchAppByPackageName(packageName: String): Boolean {
+fun Apk.launchAppByPackageName(packageName: String, safTreeUri: String? = null): Boolean {
     return try {
         val context = MainApplication.getContext()
         val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
         if (launchIntent != null) {
+            if (!safTreeUri.isNullOrEmpty()) {
+                // 把 SAF tree URI 经 Intent 传给游戏进程，并授予读/写权限（供注入dex使用）
+                launchIntent.data = safTreeUri.toUri()
+                launchIntent.addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+            }
             context.startActivity(launchIntent)
             true
         } else {
