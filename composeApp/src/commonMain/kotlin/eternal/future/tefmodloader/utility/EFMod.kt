@@ -94,7 +94,7 @@ object EFMod {
     fun initialize_data(modPath: String, targetDirectory: String) {
         try {
             val targetDir = File(targetDirectory)
-            if (!targetDir.exists() && !targetDir.mkdirs()) {
+            if (!SAFIO.exists(targetDir.path) && !SAFIO.mkdirs(targetDir.path)) {
                 EFLog.e("无法创建目标目录：$targetDirectory")
                 return
             }
@@ -105,7 +105,7 @@ object EFMod {
                 File(f, "private").let { privateDir ->
                     if (privateDir.exists()) {
                         EFLog.d("开始从 ${privateDir.absolutePath} 移动到 $targetDirectory")
-                        FileUtils.moveRecursivelyEfficient(privateDir, File(targetDirectory, "${privateDir.parentFile.name}/private"))
+                        SAFIO.moveRecursively(privateDir.path, File(targetDirectory, "${privateDir.parentFile.name}/private").path)
                         EFLog.d("完成移动 ${privateDir.name} 到 $targetDirectory")
                     } else {
                         EFLog.w("未找到私有目录：${privateDir.absolutePath}")
@@ -124,14 +124,14 @@ object EFMod {
                 val f = File(mod.path)
                 File(f, "private").let { privateDir ->
                     File(externallyPrivate, "${privateDir.parentFile.name}/private").let { externalDir ->
-                        if (externalDir.exists() && externalDir.isDirectory) {
+                        if (SAFIO.exists(externalDir.path)) {
                             if (!privateDir.exists() && !privateDir.mkdirs()) {
                                 EFLog.e("无法创建私有目录：${privateDir.absolutePath}")
                                 return@let
                             }
 
                             EFLog.d("开始从 ${externalDir.absolutePath} 更新到 ${privateDir.absolutePath}")
-                            FileUtils.moveRecursivelyEfficient(externalDir, privateDir)
+                            SAFIO.moveRecursively(externalDir.path, privateDir.path)
                             EFLog.d("完成更新 ${privateDir.name} 从 $externallyPrivate")
                         } else {
                             EFLog.w("外部私有目录不存在或不是目录：${externalDir.absolutePath}")
@@ -222,7 +222,7 @@ object EFMod {
                     val sourceDir = File(mod.path, "lib/$platform/$architecture")
                     val targetDir = File(targetDirectory, "Modx/${File(mod.path).name}")
                     EFLog.v("开始复制Modx文件从: ${sourceDir.absolutePath} 到: ${targetDir.absolutePath}")
-                    FileUtils.copyRecursivelyEfficient(sourceDir, targetDir)
+                    SAFIO.copyRecursively(sourceDir.path, targetDir.path)
                     EFLog.v("完成复制Modx文件从: ${sourceDir.absolutePath} 到: ${targetDir.absolutePath}")
                 }
             }
@@ -234,14 +234,14 @@ object EFMod {
             val loaderLib = if (State.isAndroid) "lib${loader.libName}.so" else "${loader.libName}.dll"
 
             EFLog.v("开始复制加载器库文件从: ${loaderDir.absolutePath}/lib/$platform/$architecture 到: ${loaderTargetDir.absolutePath}")
-            FileUtils.copyRecursivelyEfficient(File(loaderDir, "lib/$platform/$architecture"), loaderTargetDir)
+            SAFIO.copyRecursively(File(loaderDir, "lib/$platform/$architecture").path, loaderTargetDir.path)
             EFLog.v("完成复制加载器库文件从: ${loaderDir.absolutePath}/lib/$platform/$architecture 到: ${loaderTargetDir.absolutePath}")
 
             val originalFile = File(loaderTargetDir, loaderLib)
             val newFile = File(loaderTargetDir, "loader-core")
             EFLog.v("重命名加载器库文件: ${originalFile.absolutePath} 到: ${newFile.absolutePath}")
-            if (originalFile.exists()) {
-                originalFile.renameTo(newFile)
+            if (SAFIO.exists(originalFile.path)) {
+                SAFIO.rename(originalFile.path, newFile.path)
             }
             EFLog.v("完成重命名加载器库文件: ${originalFile.absolutePath} 到: ${newFile.absolutePath}")
 
@@ -249,7 +249,7 @@ object EFMod {
                 val sourceDir = File(modPath, "lib/$platform/$architecture")
                 val targetDir = File(loaderTargetDir, "Mod/${File(modPath).name}")
                 EFLog.v("开始复制MOD文件从: ${sourceDir.absolutePath} 到: ${targetDir.absolutePath}")
-                FileUtils.copyRecursivelyEfficient(sourceDir, targetDir)
+                SAFIO.copyRecursively(sourceDir.path, targetDir.path)
                 EFLog.v("完成复制MOD文件从: ${sourceDir.absolutePath} 到: ${targetDir.absolutePath}")
             }
         }

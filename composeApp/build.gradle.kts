@@ -26,6 +26,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.documentfile)
             implementation(project(":android:core"))
             implementation(project(":android:axml"))
             implementation(project(":android:axml"))
