@@ -112,7 +112,7 @@ actual object HomeScreen{
             uri?.let { documentUri ->
                 try {
                     val context = MainApplication.getContext()
-                    val apkFile = File(context.getExternalFilesDir(null), "patch/Game.apk")
+                    val apkFile = File(context.getExternalFilesDir(null), "patch/game.apk")
 
                     context.contentResolver.openOutputStream(documentUri)?.use { outputStream ->
                         FileInputStream(apkFile).use { inputStream ->
@@ -185,7 +185,7 @@ actual object HomeScreen{
                 },
                 dismissButton = {
                     TextButton(onClick = {
-                        File(MainApplication.getContext().getExternalFilesDir(null), "patch/Game.apk").delete()
+                        File(MainApplication.getContext().getExternalFilesDir(null), "patch/game.apk").delete()
                         showExportDialog = false
                     }) {
                         Text(locale.getString("cancel_and_delete_the_file"))
@@ -646,7 +646,7 @@ actual object HomeScreen{
                             isActive = true,
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-                                if (File(MainApplication.getContext().getExternalFilesDir(null), "patch/Game.apk").exists()) {
+                                if (File(MainApplication.getContext().getExternalFilesDir(null), "patch/game.apk").exists()) {
                                     showExportDialog = true
                                 } else {
                                     showPatchDialog = true
