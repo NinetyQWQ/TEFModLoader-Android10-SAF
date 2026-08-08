@@ -32,6 +32,7 @@ trap 'rm -rf "$OUT"' EXIT
 mkdir -p "$OUT/classes"
 
 echo ">> javac: 编译注入 dex 的 Java 源码"
+mkdir -p "$OUT/classes"
 javac -source 8 -target 8 -Xlint:-options \
   -cp "$ANDROID_JAR:$SILKRIFT" \
   -d "$OUT/classes" \
@@ -42,10 +43,17 @@ javac -source 8 -target 8 -Xlint:-options \
   "$SRC/utility/AssetManager.java" \
   "$SRC/utility/FileUtils.java"
 
+echo ">> 打包编译产物 + silkrift 为一个 jar"
+mkdir -p "$OUT/silk"
+(cd "$OUT/silk" && jar xf "$SILKRIFT")
+(cd "$OUT/classes" && jar cf "$OUT/app.jar" .)
+(cd "$OUT/silk" && jar uf "$OUT/app.jar" .)
+
 echo ">> d8: 生成 classes.dex（含 silkrift 类）"
 "$D8" --release --min-api 24 --lib "$ANDROID_JAR" \
   --output "$OUT" \
-  "$OUT/classes" "$SILKRIFT"
+  "$OUT/app.jar"
+ls -l "$OUT/classes.dex"
 
 echo ">> 更新 $BYPASS_ZIP 中的 classes.dex"
 python3 - "$OUT/classes.dex" "$BYPASS_ZIP" <<'PY'
