@@ -305,7 +305,7 @@ actual object HomeScreen{
             var isLoading by remember { mutableStateOf(false) }
             var initializationError by remember { mutableStateOf<String?>(null) }
             val coroutineScope = rememberCoroutineScope()
-            var pendingExternalPackage by remember { mutableStateOf<String?>() }
+            var pendingExternalPackage by remember { mutableStateOf<String?>(null) }
 
             // 外部模式初始化（mod 目录来自 SAF 授权）
             val launchExternalGame: (String) -> Unit = { packageName ->
