@@ -28,7 +28,10 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
+      - name: Rebuild injected dex (Bypass.zip)
+        run: |
+          chmod +x scripts/rebuild_inject_dex.sh
+          ./scripts/rebuild_inject_dex.sh
       - name: Build release APK
         run: ./gradlew :composeApp:assembleRelease --no-daemon --stacktrace
 
