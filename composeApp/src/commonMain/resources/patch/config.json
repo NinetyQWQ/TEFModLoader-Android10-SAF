@@ -1,0 +1,6 @@
+{
+  "mode": 0,
+  "manager": "eternal.future.tefmodloader",
+  "bypass": true,
+  "activity": "com.unity3d.player.UnityPlayerActivity"
+}
